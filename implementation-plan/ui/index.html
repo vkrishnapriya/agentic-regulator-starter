@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Agentic Regulator — Supervisor</title>
+  <style>
+    :root { --bg:#f7f7f5; --card:#fff; --border:#d9d9d9; --ink:#1f2937; --muted:#6b7280;
+            --green:#16a34a; --amber:#d97706; --red:#dc2626; --grey:#9ca3af; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, sans-serif; margin: 0; background: var(--bg); color: var(--ink); }
+    .wrap { max-width: 820px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: 20px; font-weight: 600; }
+    .sub { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+    .panel { background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+             padding: 16px; margin-bottom: 16px; }
+    label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    select, button { font-size: 14px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); }
+    button { background: var(--ink); color: #fff; cursor: pointer; border: none; }
+    button:disabled { opacity: .5; cursor: default; }
+    .controls { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; }
+    .turn { padding: 8px 0; border-bottom: 1px solid #eee; font-size: 14px; }
+    .turn .role { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); }
+    .pillar { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #eee; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--grey); }
+    .dot.green { background: var(--green);} .dot.amber { background: var(--amber);}
+    .dot.red { background: var(--red);} .dot.review_required { background: var(--amber);}
+    .pname { font-size: 14px; text-transform: capitalize; }
+    .pstat { font-size: 12px; color: var(--muted); margin-left: auto; }
+    .empty { color: var(--muted); font-size: 13px; }
+    .flag { font-size: 12px; color: var(--ink); margin: 4px 0 0 22px; }
+    .cite { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Supervisor console</h1>
+    <div class="sub">Select an adviser and scenario, run a synthetic probe, read the scorecard.</div>
+
+    <div class="panel">
+      <div class="controls">
+        <div>
+          <label>Scenario</label>
+          <select id="scenario"></select>
+        </div>
+        <div>
+          <label>Adviser</label>
+          <select id="adviser"></select>
+        </div>
+        <button id="run">Run</button>
+        <span id="status" class="empty"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <label>Transcript</label>
+      <div id="transcript" class="empty">No run yet.</div>
+    </div>
+
+    <div class="panel">
+      <label>Scorecard</label>
+      <div id="scorecard" class="empty">No run yet.</div>
+    </div>
+  </div>
+
+  <script>
+    const API = localStorage.getItem("API_BASE") || "http://localhost:8000";
+
+    async function load() {
+      const [scenarios, advisers] = await Promise.all([
+        fetch(`${API}/scenarios`).then(r => r.json()),
+        fetch(`${API}/advisers`).then(r => r.json()),
+      ]);
+      const sSel = document.getElementById("scenario");
+      const aSel = document.getElementById("adviser");
+      scenarios.forEach(s => sSel.add(new Option(s.title, s.scenario_id)));
+      advisers.forEach(a => aSel.add(new Option(a.name, a.adviser_id)));
+    }
+
+    async function run() {
+      const btn = document.getElementById("run");
+      const status = document.getElementById("status");
+      btn.disabled = true; status.textContent = "Running…";
+
+      const body = {
+        scenario_id: document.getElementById("scenario").value,
+        adviser_id: document.getElementById("adviser").value,
+      };
+      const { run_id } = await fetch(`${API}/runs`, {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      }).then(r => r.json());
+
+      let run;
+      for (let i = 0; i < 50; i++) {
+        run = await fetch(`${API}/runs/${run_id}`).then(r => r.json());
+        if (run.status === "complete") break;
+        await new Promise(r => setTimeout(r, 200));
+      }
+      render(run);
+      status.textContent = `Run ${run_id} complete.`;
+      btn.disabled = false;
+    }
+
+    function render(run) {
+      const t = document.getElementById("transcript");
+      t.innerHTML = "";
+      (run.transcript?.turns || []).forEach(turn => {
+        const div = document.createElement("div");
+        div.className = "turn";
+        div.innerHTML = `<div class="role">${turn.role}</div>${turn.text}`;
+        t.appendChild(div);
+      });
+
+      const sc = document.getElementById("scorecard");
+      sc.innerHTML = "";
+      const pillars = run.scorecard?.pillars || {};
+      Object.entries(pillars).forEach(([name, p]) => {
+        const row = document.createElement("div");
+        row.className = "pillar";
+        row.innerHTML =
+          `<span class="dot ${p.status}"></span>` +
+          `<span class="pname">${name.replace(/_/g, " ")}</span>` +
+          `<span class="pstat">${p.status.replace(/_/g, " ")}</span>`;
+        sc.appendChild(row);
+        (p.flags || []).forEach(f => {
+          const fl = document.createElement("div");
+          fl.className = "flag";
+          const cite = f.citation ? ` <span class="cite">[${f.citation.rule_id} · ${f.citation.version}]</span>` : "";
+          fl.innerHTML = `• ${f.summary}${cite}`;
+          sc.appendChild(fl);
+        });
+      });
+    }
+
+    document.getElementById("run").addEventListener("click", run);
+    load();
+  </script>
+</body>
+</html>

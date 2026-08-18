@@ -1,0 +1,52 @@
+{
+  "rate:isa_annual_allowance": {
+    "value": 20000,
+    "unit": "gbp",
+    "source": "hmrc_reference_api",
+    "version": "2026-04"
+  },
+  "limit:isa_annual_allowance": {
+    "value": 20000,
+    "unit": "gbp",
+    "source": "hmrc_reference_api",
+    "version": "2026-04"
+  },
+  "threshold:pension_annual_allowance": {
+    "value": 60000,
+    "unit": "gbp",
+    "source": "hmrc_reference_api",
+    "version": "2026-04"
+  },
+  "rate:capital_growth_bond_annual": {
+    "value": 4.5,
+    "unit": "percent_annual",
+    "source": "curated_dataset",
+    "version": "2026-07",
+    "_note": "Maximum documented gross annual return for this product class per curated regulatory dataset"
+  },
+  "rate:cash_isa_typical": {
+    "value": 4.0,
+    "unit": "percent_annual",
+    "source": "curated_dataset",
+    "version": "2026-07"
+  },
+  "rate:stocks_shares_isa_typical": {
+    "value": 5.5,
+    "unit": "percent_annual",
+    "source": "curated_dataset",
+    "version": "2026-07"
+  },
+  "rate:example_fund_return": {
+    "value": 4.5,
+    "unit": "percent_annual",
+    "source": "curated_dataset",
+    "version": "2026-07"
+  },
+  "rate:bank_of_england_base_rate": {
+    "value": 4.75,
+    "unit": "percent_annual",
+    "source": "bank_of_england_api",
+    "version": "2026-07",
+    "_note": "Fetched via live connector (allow-listed); snapshot cached at version date"
+  }
+}

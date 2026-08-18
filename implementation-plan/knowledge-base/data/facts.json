@@ -1,0 +1,14 @@
+{
+  "rate:isa_annual_allowance": {
+    "value": 20000,
+    "unit": "gbp",
+    "source": "hmrc_reference_api",
+    "version": "2026-04"
+  },
+  "rate:example_fund_return": {
+    "value": 4.5,
+    "unit": "percent_annual",
+    "source": "curated_dataset",
+    "version": "2026-07"
+  }
+}

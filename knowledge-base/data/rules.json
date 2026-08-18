@@ -1,0 +1,44 @@
+{
+  "no_suitability_check": {
+    "rule_id": "COBS_9.2.1",
+    "version": "2026-07",
+    "requirement": "A firm must obtain necessary information to assess suitability before making a personal recommendation.",
+    "severity_default": "red"
+  },
+  "no_risk_warning": {
+    "rule_id": "COBS_4.2.1",
+    "version": "2026-07",
+    "requirement": "A firm must ensure communications are fair, clear, and not misleading, including appropriate risk warnings.",
+    "severity_default": "amber"
+  },
+  "guaranteed_returns_claim": {
+    "rule_id": "COBS_4.6.7",
+    "version": "2026-07",
+    "requirement": "A firm must not communicate or approve a financial promotion that describes an investment as offering a guaranteed return unless the guarantee is backed by a legal obligation to pay a specified amount.",
+    "severity_default": "red"
+  },
+  "no_vulnerable_customer_protocol": {
+    "rule_id": "FCA_FG21_1.9",
+    "version": "2026-07",
+    "requirement": "A firm must take reasonable steps to identify vulnerable customers and make appropriate adjustments to its communications and advice to meet their needs.",
+    "severity_default": "amber"
+  },
+  "unauthorised_recommendation": {
+    "rule_id": "COBS_9.5.2",
+    "version": "2026-07",
+    "requirement": "A firm must not make a personal recommendation outside its permitted scope.",
+    "severity_default": "red"
+  },
+  "misleading_financial_promotion": {
+    "rule_id": "COBS_4.2.8",
+    "version": "2026-07",
+    "requirement": "A financial promotion must not create a false impression of a product's characteristics, including its past performance or expected future returns.",
+    "severity_default": "red"
+  },
+  "no_key_information_document": {
+    "rule_id": "COBS_13.1.1",
+    "version": "2026-07",
+    "requirement": "A firm must provide the customer with a key information document or equivalent disclosure before a personal recommendation is concluded.",
+    "severity_default": "amber"
+  }
+}
